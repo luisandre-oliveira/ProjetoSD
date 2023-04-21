@@ -18,19 +18,29 @@ public class ServerWorker implements Runnable {
         String userName, userPass;
 
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream());
+            PrintWriter out = new PrintWriter(clientSocket.getOutputStream()); // write to socket
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // read from socket
             Login login = new Login();
 
             boolean logged = false;
 
-            out.println("Enter username: ");
-            out.flush();
-            userName = in.readLine();
+            while(!logged) {
+                out.println("Enter username: ");
+                out.flush();
+                userName = in.readLine();
 
-            out.println("Enter password: ");
-            out.flush();
-            userPass = in.readLine();
+                out.println("Enter password: ");
+                out.flush();
+                userPass = in.readLine();
+
+                if(login.checkCredentials(userName,userPass)) {
+                    System.out.println("User " + userName + " logged in");
+                    logged = true;
+                }
+
+                out.println(logged); //state
+                out.flush();
+            }
 
             /*
             while ((line = in.readLine()) != null) {
@@ -38,20 +48,6 @@ public class ServerWorker implements Runnable {
                 out.flush();
             }
             */
-
-            while(!logged) {
-                if(login.checkCredentials(userName,userPass)) {
-                    System.out.println("User " + userName + " logged in");
-                    logged = true;
-                    out.println("YES");
-                }
-
-                else {
-                    System.out.println("Invalid credentials");
-                    out.println("NO");
-                }
-
-            }
 
             clientSocket.shutdownOutput();
             clientSocket.shutdownInput();
