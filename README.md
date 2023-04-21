@@ -8,25 +8,25 @@ A essência do serviço é permitir aos utilizadores ler e fazer publicações e
 
 ### Funcionalidade da Lógica de Negócio
 Deverá ser implementada numa classe Java a seguinte funcionalidade:
-T1. Criar um canal.
-T2. Fechar um canal, não sendo possível publicar mais nesse canal, mas ainda permitir consultar as
+* T1. Criar um canal.
+* T2. Fechar um canal, não sendo possível publicar mais nesse canal, mas ainda permitir consultar as
 publicações já efetuadas. Caso haja clientes à espera de ler novas publicações no canal fechado,
 estes deverão receber uma mensagem que indique que não haverá mais publicações para ler neste
 canal.
-T3. Fazer uma publicação num canal.
-T4. Obter as listas de publicações num conjunto de canais.
-T5. Obter a próxima publicação num canal, ficando o cliente à espera que esta seja publicada.
-T6. Valorização: Subscrever um canal, sendo o cliFuncionalidade Cliente-Servidor
+* T3. Fazer uma publicação num canal.
+* T4. Obter as listas de publicações num conjunto de canais.
+* T5. Obter a próxima publicação num canal, ficando o cliente à espera que esta seja publicada.
+* T6. Valorização: Subscrever um canal, sendo o cliFuncionalidade Cliente-Servidor
 
 ### Usando no servidor a classe desenvolvida anteriormente, deverá suportar a seguinte funcionalidade básica:
-S1. Autenticação de utilizador, dado o seu nome e palavra-passe. Sempre que um utilizador desejar
+* S1. Autenticação de utilizador, dado o seu nome e palavra-passe. Sempre que um utilizador desejar
 interagir com o serviço deverá estabelecer uma conexão e ser autenticado pelo servidor.
-S2. Dar aos utilizadores comuns acesso às funcionalidades T3 a T5, assumindo-se que o cliente é o
+* S2. Dar aos utilizadores comuns acesso às funcionalidades T3 a T5, assumindo-se que o cliente é o
 utilizador previamente identificado.
-S3. Dar a um super-utilizador acesso à funcionalidade T1 e T2 (criar e fechar canais).
-S4. Valorização: Permitir que um cliente execute outras operações enquanto se espera pela conclusão
+* S3. Dar a um super-utilizador acesso à funcionalidade T1 e T2 (criar e fechar canais).
+* S4. Valorização: Permitir que um cliente execute outras operações enquanto se espera pela conclusão
 duma operação, incluindo publicar ou obter publicações de outros canais.
-S5. Valorização: Dar aos utilizadores comuns acesso à funcionalidade T6, suportando a notificação
+* S5. Valorização: Dar aos utilizadores comuns acesso à funcionalidade T6, suportando a notificação
 do cliente por parte do servidor quando for feita uma publicação em algum dos canais subscritos.
 
 ### Condições
