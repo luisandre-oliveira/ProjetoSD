@@ -1,21 +1,31 @@
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Login {
-    public Map <String, String> lista;
+    public List<User> lista;
 
     public Login() {
-        this.lista = new HashMap<>();
-        lista.put("luis","1234");
+        lista = new ArrayList<>();
     }
 
     public boolean checkCredentials(String username, String password) {
-        //System.out.println(lista);
-        return Objects.equals(lista.get(username), password);
+        boolean flag = false;
+
+        for (User u:lista) {
+            if(Objects.equals(u.getUsername(), username)) {
+                if(Objects.equals(u.getPassword(), password)) {
+                    flag = true;
+                }
+            }
+        }
+
+        return flag;
     }
 
-    public void addUser(String username, String password) {
-        lista.put(username,password);
+    public void addUser(User user) {
+        lista.add(user);
+    }
+
+    public List<User> getLista() {
+        return new ArrayList<>(lista);
     }
 }

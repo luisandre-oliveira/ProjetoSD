@@ -6,7 +6,6 @@ import java.net.Socket;
 import java.util.Objects;
 
 public class Client {
-
     private static final int PORT = 8080;
 
     public static void main(String[] args) throws IOException {
@@ -42,8 +41,11 @@ public class Client {
             } else {
                 System.out.println("--login unsuccessful--");
             }
-
         }
+
+        /* USER IS NOW LOGGED IN */
+
+
 
         System.out.println("CLOSING SOCKET...");
         socket.shutdownOutput();

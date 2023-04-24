@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ServerWorker implements Runnable {
-
     private final Socket clientSocket;
 
     ServerWorker(Socket cls) {
@@ -17,10 +16,17 @@ public class ServerWorker implements Runnable {
         String line;
         String userName, userPass;
 
+        Login login = new Login();
+
+        User luis = new User("luis", "1234", true);
+        User jorge = new User("jorge", "1234", true);
+
+        login.addUser(luis);
+        login.addUser(jorge);
+
         try {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream()); // write to socket
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); // read from socket
-            Login login = new Login();
 
             boolean logged = false;
 
@@ -41,6 +47,8 @@ public class ServerWorker implements Runnable {
                 out.println(logged); //state
                 out.flush();
             }
+
+            /* USER IS NOW LOGGED IN */
 
             /*
             while ((line = in.readLine()) != null) {
