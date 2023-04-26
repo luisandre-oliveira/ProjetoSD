@@ -18,6 +18,8 @@ public class Client {
         String userName, userPass;
         boolean logged = false;
         String state;
+        String line;
+        String menu;
 
         while(!logged) {
             // Read the socket for the prompt, then reading the username from keyboard, and finally sending it
@@ -37,19 +39,36 @@ public class Client {
 
             if(Objects.equals(state, Boolean.TRUE.toString())) {
                 logged = true;
-                System.out.println("--login successful--");
+                System.out.println("\n--login successful--");
             } else {
-                System.out.println("--login unsuccessful--");
+                System.out.println("\n--login unsuccessful--");
             }
         }
 
         /* USER IS NOW LOGGED IN */
 
+        do {
+            //TODO: this is really dumb, need to improve this, doesn't work if I use 'while ((line = in.readLine()) != null)'
+            for(int x= 0; x <10; x++) {
+                line = in.readLine();
+                System.out.println(line);
+            }
 
+            menu = stdin.readLine(); // get the menu option from the user
+
+            out.println(menu);
+            out.flush();
+
+            String result = in.readLine();
+            System.out.println(result);
+        } while(Integer.parseInt(menu) != 0);
+
+        /* USER HAS CHOSEN TO LOGOUT */
 
         System.out.println("CLOSING SOCKET...");
         socket.shutdownOutput();
         socket.shutdownInput();
         socket.close();
+        System.out.println("SOCKET CLOSED.");
     }
 }

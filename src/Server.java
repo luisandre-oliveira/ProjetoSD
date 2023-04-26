@@ -10,18 +10,16 @@ public class Server {
         serverSocket = new ServerSocket(PORT);
 
         while (true) {
-            System.out.println("Number of threads running: " + getNumberThreadsCurrentlyRunning());
-
             Socket clientSocket = serverSocket.accept();
             Thread thread = new Thread(new ServerWorker(clientSocket));
             thread.start();
 
-            System.out.println("Number of threads running: " + getNumberThreadsCurrentlyRunning());
+            System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
         }
     }
 
     public static void main(String[] args) throws IOException {
-        Server s = new Server();
+        Server server = new Server();
     }
 
     public int getNumberThreadsCurrentlyRunning() {
