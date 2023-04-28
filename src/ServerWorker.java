@@ -14,16 +14,18 @@ public class ServerWorker implements Runnable {
 
     @Override
     public void run() {
+        int menu;
         String line;
         String userName = "", userPass;
-        int menu;
+        Boolean flag = false;
 
         Login login = new Login();
 
-        // initialization of two super-users with admin capabilities
+        // initialization of two super-users who are admin and one normal user with no admin privileges
         User luis = new User("luis", "1234", true);
         User jorge = new User("jorge", "1234", true);
         User comum = new User("comum", "1234", false);
+
         login.addUser(luis);
         login.addUser(jorge);
         login.addUser(comum);
@@ -35,12 +37,7 @@ public class ServerWorker implements Runnable {
             boolean logged = false;
 
             while(!logged) {
-                out.println("Enter username: ");
-                out.flush();
                 userName = in.readLine();
-
-                out.println("Enter password: ");
-                out.flush();
                 userPass = in.readLine();
 
                 if(login.checkCredentials(userName,userPass)) {
@@ -48,52 +45,21 @@ public class ServerWorker implements Runnable {
                     logged = true;
                 }
 
-                out.println(logged); //state
+                out.println(logged); //state of log (true/false)
                 out.flush();
             }
 
             /* USER IS NOW LOGGED IN */
 
             do {
-                out.println("\nWelcome to main menu!!");
-                out.println("1 - (ADMIN) Create a channel.");
-                out.println("2 - (ADMIN) Close a channel.");
-                out.println("3 - See posts in a channel.");
-                out.println("4 - Post in a channel.");
-                out.println("5 - Get a list of posts from various channels.");
-                out.println("0 - Exit the program."); // TODO: maybe later add the functionality do just logout instead of exit
-                out.println("\nWhat do you wish to do?");
-                out.flush();
+                menu = Integer.parseInt(in.readLine()); // get the menu option from the client
 
-                menu = Integer.parseInt(in.readLine()); // get the menu option
-
-                switch (menu) {
-                    case 0 -> {
-                        out.println("You chose exiting the program.");
-                    }
-                    case 1 -> {
-                        out.println("You chose creating a channel.");
-
-                        for(User u: login.getLista()) {
-                            if(Objects.equals(u.getUsername(), userName)) {
-                                if(u.isUserAdmin()) {
-                                    System.out.println("YES");
-                                } else {
-                                    System.out.println("NO");
-                                }
-                            }
-                        }
-                    }
-                    case 2 -> out.println("You chose closing a channel.");
-                    case 3 -> {
-                        out.println("You chose seeing posts in a channel.");
-
-
-                    }
-                    case 4 -> out.println("You chose posting a channel.");
-                    default -> out.println("You chose poorly... Please try again.");
+                if(menu == 1 || menu == 2) {
+                    flag = login.isUserAdmin(userName);
+                    out.println(flag);
+                    out.flush();
                 }
-                out.flush();
+
             } while (menu != 0);
 
             System.out.println("User " + userName + " logged out");
@@ -117,4 +83,5 @@ public class ServerWorker implements Runnable {
             }
         }
     }
+
 }

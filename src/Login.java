@@ -21,6 +21,17 @@ public class Login {
         return flag;
     }
 
+    public boolean isUserAdmin(String username) {
+        boolean flag = false;
+
+        for (User u: lista) {
+            if(Objects.equals(u.getUsername(), username)) {
+                flag = u.isUserAdmin();
+            }
+        }
+        return flag;
+    }
+
     public void addUser(User user) {
         lista.add(user);
     }

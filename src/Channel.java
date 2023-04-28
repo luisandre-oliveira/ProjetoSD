@@ -10,11 +10,11 @@ public class Channel {
         this.messages = new ArrayList<>();
     }
 
-    public synchronized void addMessage(String message) {
+    public void addMessage(String message) {
         messages.add(message);
     }
 
-    public synchronized List<String> getMessages() {
+    public List<String> getMessages() {
         return new ArrayList<>(messages);
     }
 
