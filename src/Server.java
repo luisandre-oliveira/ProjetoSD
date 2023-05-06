@@ -11,7 +11,7 @@ public class Server {
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            Thread thread = new Thread(new ServerWorker(clientSocket));
+                Thread thread = new Thread(new ServerWorker(clientSocket));
             thread.start();
 
             System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());

@@ -3,23 +3,18 @@ import java.util.List;
 
 public class Channel {
     private final String name;
-    private final List<String> messages;
+    private final List<Post> posts;
 
     public Channel(String name) {
         this.name = name;
-        this.messages = new ArrayList<>();
+        this.posts = new ArrayList<>();
     }
 
-    public void addMessage(String message) {
-        messages.add(message);
-    }
+    public void addPost(Post post) { posts.add(post); }
 
-    public List<String> getMessages() {
-        return new ArrayList<>(messages);
-    }
+    public List<Post> getPosts() { return this.posts; }
 
-    public String getName() {
-        return name;
-    }
+    public String getNameChannel() { return name; }
+
+    public String getNumberPostsInChannel() { return String.valueOf(getPosts().size()); }
 }
-

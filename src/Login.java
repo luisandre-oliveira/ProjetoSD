@@ -1,16 +1,16 @@
 import java.util.*;
 
 public class Login {
-    public List<User> lista;
+    public List<User> listUsers;
 
     public Login() {
-        lista = new ArrayList<>();
+        listUsers = new ArrayList<>();
     }
 
     public boolean checkCredentials(String username, String password) {
         boolean flag = false;
 
-        for (User u:lista) {
+        for (User u: listUsers) {
             if(Objects.equals(u.getUsername(), username)) {
                 if(Objects.equals(u.getPassword(), password)) {
                     flag = true;
@@ -24,7 +24,7 @@ public class Login {
     public boolean isUserAdmin(String username) {
         boolean flag = false;
 
-        for (User u: lista) {
+        for (User u: listUsers) {
             if(Objects.equals(u.getUsername(), username)) {
                 flag = u.isUserAdmin();
             }
@@ -33,10 +33,10 @@ public class Login {
     }
 
     public void addUser(User user) {
-        lista.add(user);
+        listUsers.add(user);
     }
 
-    public List<User> getLista() {
-        return new ArrayList<>(lista);
+    public List<User> getListUsers() {
+        return new ArrayList<>(listUsers);
     }
 }
