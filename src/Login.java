@@ -1,7 +1,7 @@
 import java.util.*;
 
 public class Login {
-    public List<User> listUsers;
+    public final List<User> listUsers;
 
     public Login() {
         listUsers = new ArrayList<>();

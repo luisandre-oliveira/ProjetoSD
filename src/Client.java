@@ -13,7 +13,7 @@ public class Client {
         TaggedConnection taggedConnection = new TaggedConnection(socket);
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in)); // read from keyboard
 
-        String userName, userPass; // user information
+        String userName = "", userPass; // user information
         boolean userLoginStatus = false; // true if logged
         boolean userAdminStatus = false; // true if admin
         String state, menu;
@@ -72,8 +72,6 @@ public class Client {
                     } else {
                         System.out.println("\n--WARNING: user doesn´t have admin status--");
                     }
-
-                    //TODO: código de criação de canal
                 }
 
                 case 2 -> {
@@ -86,7 +84,7 @@ public class Client {
                         System.out.println("\n--WARNING: user doesn´t have admin status--");
                     }
 
-                    //TODO: código para apagar canal
+                    //TODO: client delete channel
                 }
 
                 case 3 -> {
@@ -118,7 +116,7 @@ public class Client {
                                 timestamp = new String(taggedConnection.receive().data);
                                 content = new String(taggedConnection.receive().data);
 
-                                System.out.println(username + " posted at " + timestamp + ": "+ content);
+                                System.out.println("\n" + username + " posted at " + timestamp + " -> "+ content);
                             }
                         } else {
                             System.out.println("\n--WARNING: No posts have been sent in this channel--");
@@ -130,10 +128,40 @@ public class Client {
 
                 case 4 -> {
                     System.out.println("\nYou chose posting to a channel.");
-                    //TODO: código para postar num canal
+
+                    int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list
+                    System.out.println("There are " + sizeListChannels + " open channels.");
+
+                    if(sizeListChannels > 0) {
+                        ArrayList<String> tempListChannels = new ArrayList<>();
+
+                        for (int counter = 0; counter < sizeListChannels; counter++) {
+                            tempListChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
+                            System.out.println(counter + " - " + tempListChannels.get(counter));
+                        }
+
+                        System.out.println("What channel to you want to see?");
+                        int chosenChannel = Integer.parseInt(stdin.readLine());
+
+                        taggedConnection.send(0,tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
+
+                        System.out.println("What is the message for the post?");
+                        String message = stdin.readLine();
+                        taggedConnection.send(0,userName.getBytes());
+                        taggedConnection.send(1,message.getBytes());
+
+                    } else {
+                        System.out.println("\n--WARNING: There are no open channels--");
+                    }
                 }
 
-                case 0 -> System.out.println("\n--WARNING: You chose exiting the program.");
+                case 5 -> {
+                    System.out.println("\nYou chose seeing posts from various channels.");
+
+                    //TODO: client get list of posts from various channels
+                }
+
+                case 0 -> System.out.println("\n--WARNING: You chose exiting the program.--");
 
                 default -> System.out.println("\n--WARNING: You chose poorly... Please try again.");
             }
