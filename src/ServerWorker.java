@@ -96,9 +96,7 @@ public class ServerWorker implements Runnable {
                                     taggedConnection.send(0,channel.getNumberPostsInChannel().getBytes()); // send size of list of posts so client can know what to expect
 
                                     for(Post post: channel.getPosts()) {
-                                        taggedConnection.send(0,post.getUsername().getBytes()); // send username
-                                        taggedConnection.send(1, post.getTimestamp().getBytes()); // send timestamp
-                                        taggedConnection.send(2,post.getContent().getBytes()); // send post message
+                                        taggedConnection.send(0,post.toString().getBytes()); // send post transformed into formatted string and then bytes
                                     }
                                 }
                             }

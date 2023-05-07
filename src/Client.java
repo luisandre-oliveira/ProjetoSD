@@ -108,15 +108,12 @@ public class Client {
 
                         int sizeListPosts = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts
 
-                        String username, timestamp, content;
+                        String message;
 
                         if(sizeListPosts > 0) {
                             for (int counter = 0; counter < sizeListPosts; counter++) {
-                                username = new String(taggedConnection.receive().data);
-                                timestamp = new String(taggedConnection.receive().data);
-                                content = new String(taggedConnection.receive().data);
-
-                                System.out.println("\n" + username + " posted at " + timestamp + " -> "+ content);
+                                message = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
+                                System.out.println("\n" + message);
                             }
                         } else {
                             System.out.println("\n--WARNING: No posts have been sent in this channel--");
