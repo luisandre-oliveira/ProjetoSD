@@ -28,6 +28,6 @@ public class Post {
 
     @Override
     public String toString() {
-        return "[" + timestamp + "] " + username + ": " + content;
+        return "[" + getTimestamp() + "] " + getUsername() + ": " + getContent();
     }
 }

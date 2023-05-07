@@ -11,7 +11,7 @@ public class Server {
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
-                Thread thread = new Thread(new ServerWorker(clientSocket));
+            Thread thread = new Thread(new ServerWorker(clientSocket));
             thread.start();
 
             System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
@@ -23,11 +23,11 @@ public class Server {
     }
 
     public int getNumberThreadsCurrentlyRunning() {
-        int nbRunning = 0;
+        int nThreadsRunning = 0;
         for (Thread t : Thread.getAllStackTraces().keySet()) {
-            if (t.getState()==Thread.State.RUNNABLE)
-                nbRunning++;
+            if (t.getState() == Thread.State.RUNNABLE)
+                nThreadsRunning++;
         }
-        return nbRunning;
+        return nThreadsRunning;
     }
 }

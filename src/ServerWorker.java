@@ -4,19 +4,14 @@ import java.util.Objects;
 
 public class ServerWorker implements Runnable {
     private final Socket clientSocket;
+    private final Records records;
+    private final Login login;
 
-    ServerWorker(Socket cls) { this.clientSocket = cls; }
+    ServerWorker(Socket cls) {
+        this.clientSocket = cls;
+        this.records = new Records();
+        this.login = new Login();
 
-    @Override
-    public void run() {
-        int menu;
-        String userName = "", userPass;
-        boolean flag;
-
-        Records records = new Records();
-        Login login = new Login();
-
-        // initialization of two super-users who are admin and one normal user with no admin privileges
         User luis = new User("luis", "1234", true);
         User jorge = new User("jorge", "1234", true);
         User comum = new User("comum", "1234", false);
@@ -25,7 +20,14 @@ public class ServerWorker implements Runnable {
         login.addUser(jorge);
         login.addUser(comum);
 
-        records.addToListChannels(new Channel("Mamma Mia"));
+        records.addToListChannels(new Channel("Testing Channel"));
+    }
+
+    @Override
+    public void run() {
+        int menu;
+        String userName = "", userPass;
+        boolean flag;
 
         try {
             TaggedConnection taggedConnection = new TaggedConnection(clientSocket);
@@ -102,6 +104,10 @@ public class ServerWorker implements Runnable {
                             }
                         }
 
+                        for(Channel channel: records.getListChannels()) {
+                            System.out.println(channel.getNameChannel() + " -> " + channel.getPosts());
+                        }
+
                     }
 
                     case 4 -> { // post in a channel
@@ -138,8 +144,7 @@ public class ServerWorker implements Runnable {
 
             System.out.println("User " + userName + " logged out");
 
-            clientSocket.shutdownOutput();
-            clientSocket.shutdownInput();
+            taggedConnection.close();
             clientSocket.close();
         } catch (IOException e) {
             // code to handle unexpected disconnections

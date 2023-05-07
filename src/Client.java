@@ -70,7 +70,7 @@ public class Client {
 
                         taggedConnection.send(0,name.getBytes());
                     } else {
-                        System.out.println("\n--WARNING: user doesn´t have admin status--");
+                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
                 }
 
@@ -81,7 +81,7 @@ public class Client {
                     if(userAdminStatus || Objects.equals(state, Boolean.TRUE.toString())) {
                         userAdminStatus = true;
                     } else {
-                        System.out.println("\n--WARNING: user doesn´t have admin status--");
+                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
 
                     //TODO: client delete channel
@@ -116,7 +116,7 @@ public class Client {
                                 System.out.println("\n" + message);
                             }
                         } else {
-                            System.out.println("\n--WARNING: No posts have been sent in this channel--");
+                            System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListChannels.get(chosenChannel) + " --");
                         }
                     } else {
                         System.out.println("\n--WARNING: There are no open channels--");
@@ -167,8 +167,7 @@ public class Client {
         /* USER HAS CHOSEN TO LOGOUT */
 
         System.out.println("\nCLOSING SOCKET...");
-        socket.shutdownOutput();
-        socket.shutdownInput();
+        taggedConnection.close();
         socket.close();
         System.out.println("SOCKET CLOSED.");
     }

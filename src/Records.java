@@ -8,15 +8,9 @@ public class Records {
         this.listChannels = new ArrayList<>();
     }
 
-    public void addToListChannels(Channel channel) {
-        listChannels.add(channel);
-    }
+    public void addToListChannels(Channel channel) { listChannels.add(channel); }
 
-    public List<Channel> getListChannels() {
-        return new ArrayList<>(listChannels);
-    }
+    public List<Channel> getListChannels() { return new ArrayList<>(listChannels); }
 
-    public String getSizeOfListChannels() {
-        return String.valueOf(getListChannels().size());
-    }
+    public String getSizeOfListChannels() { return String.valueOf(getListChannels().size()); }
 }
