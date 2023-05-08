@@ -3,11 +3,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
-    private final ServerSocket serverSocket;
-    private final int PORT = 8080;
 
     public Server() throws IOException {
-        serverSocket = new ServerSocket(PORT);
+        final int PORT = 8080;
+        final ServerSocket serverSocket = new ServerSocket(PORT);
 
         Records records = new Records();
         records.addToListChannels(new Channel("Testing Channel",true));

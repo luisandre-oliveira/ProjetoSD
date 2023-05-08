@@ -45,13 +45,14 @@ public class Client {
         /* USER IS NOW LOGGED IN */
 
         do {
-            System.out.println("\nWelcome to main menu!!");
+            System.out.println("\n--WARNING: ALWAYS CHOOSE THE NUMBER REFERRING TO THE OPTION YOU WANT!!--");
+            System.out.println("Welcome to main menu!!");
             System.out.println("1 - (ADMIN) Create a channel.");
             System.out.println("2 - (ADMIN) Close a channel.");
             System.out.println("3 - See posts in a channel.");
             System.out.println("4 - Post in a channel.");
             System.out.println("5 - Get a list of posts from various channels.");
-            System.out.println("0 - Exit the program."); // TODO: maybe later add the functionality to just logout instead of exit
+            System.out.println("0 - Exit the program.");
             System.out.println("\nWhat do you wish to do?");
 
             menu = stdin.readLine(); // get the menu option from the user
@@ -70,7 +71,7 @@ public class Client {
 
                         taggedConnection.send(0,name.getBytes());
                     } else {
-                        System.out.println("\n--ERROR   : user doesn´t have admin status--\n");
+                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
                 }
 
@@ -84,12 +85,6 @@ public class Client {
                         System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
 
-                    //TODO: client delete channel
-                }
-
-                case 3 -> {
-                    System.out.println("\nYou chose seeing posts in a channel.");
-
                     int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list
                     System.out.println("There are " + sizeListChannels + " open channels.");
 
@@ -101,22 +96,43 @@ public class Client {
                             System.out.println(counter + " - " + tempListChannels.get(counter));
                         }
 
-                        System.out.println("What channel to you want to see?");
+                        System.out.println("What channel to you want to close?");
                         int chosenChannel = Integer.parseInt(stdin.readLine());
 
-                        taggedConnection.send(0,tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
+                        taggedConnection.send(0, tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
+                    }
+                }
 
-                        int sizeListPosts = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts
+                case 3 -> {
+                    System.out.println("\nYou chose seeing posts in a channel.");
+
+                    int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
+                    System.out.println("There are " + sizeListChannels + " open channels.");
+
+                    if(sizeListChannels > 0) { // go through every channel
+                        ArrayList<String> tempListNameChannels = new ArrayList<>();
+
+                        for (int counter = 0; counter < sizeListChannels; counter++) {
+                            tempListNameChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
+                            System.out.println(counter + " - " + tempListNameChannels.get(counter)); // print all the channels names
+                        }
+
+                        System.out.println("What channel to you want to see?");
+                        int chosenChannel = Integer.parseInt(stdin.readLine()); // read from keyboard the id of the channel
+
+                        taggedConnection.send(0,tempListNameChannels.get(chosenChannel).getBytes()); // send specific channel id in list
+
+                        int sizeListPostsInChannel = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts
 
                         String message;
 
-                        if(sizeListPosts > 0) {
-                            for (int counter = 0; counter < sizeListPosts; counter++) {
+                        if(sizeListPostsInChannel > 0) {
+                            for (int counter = 0; counter < sizeListPostsInChannel; counter++) {
                                 message = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
                                 System.out.println("\n" + message);
                             }
                         } else {
-                            System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListChannels.get(chosenChannel) + " --");
+                            System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListNameChannels.get(chosenChannel) + " --");
                         }
                     } else {
                         System.out.println("\n--WARNING: There are no open channels--");
@@ -137,7 +153,7 @@ public class Client {
                             System.out.println(counter + " - " + tempListChannels.get(counter));
                         }
 
-                        System.out.println("What channel to you want to post a message?");
+                        System.out.println("\nWhat channel to you want to post a message?");
                         int chosenChannel = Integer.parseInt(stdin.readLine());
 
                         taggedConnection.send(0,tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
@@ -146,7 +162,6 @@ public class Client {
                         String message = stdin.readLine();
                         taggedConnection.send(0,userName.getBytes());
                         taggedConnection.send(1,message.getBytes());
-
                     } else {
                         System.out.println("\n--WARNING: There are no open channels--");
                     }
@@ -155,7 +170,36 @@ public class Client {
                 case 5 -> {
                     System.out.println("\nYou chose seeing posts from various channels.");
 
-                    //TODO: client get list of posts from various channels
+                    int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
+                    System.out.println("There are " + sizeListChannels + " channels available.");
+
+                    if(sizeListChannels > 0) { // go through every channel
+                        ArrayList<String> tempListNameChannels = new ArrayList<>();
+
+                        for (int counter = 0; counter < sizeListChannels; counter++) {
+                            tempListNameChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
+                        }
+
+                        for (int outerCounter = 0; outerCounter < sizeListChannels; outerCounter++) {
+                            int sizeListPostsInChannel = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts in channel
+
+                            String message;
+
+                            System.out.println("\n" + tempListNameChannels.get(outerCounter));
+
+                            if(sizeListPostsInChannel > 0) {
+                                for (int innerCounter = 0; innerCounter < sizeListPostsInChannel; innerCounter++) {
+                                    message = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
+                                    System.out.println(message);
+                                }
+                            } else {
+                                System.out.println("--No posts have been sent in this channel.--");
+                            }
+                        }
+
+                    } else {
+                        System.out.println("\n--WARNING: There are no open channels--");
+                    }
                 }
 
                 case 0 -> System.out.println("\n--WARNING: You chose exiting the program.--");

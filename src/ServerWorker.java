@@ -61,17 +61,28 @@ public class ServerWorker implements Runnable {
                         flag = login.isUserAdmin(userName);
                         if(flag) { // to send state of login. There's probably a better way to do this, but I can´t find it right now
                             taggedConnection.send(0,Boolean.TRUE.toString().getBytes());
+
+                            taggedConnection.send(0,records.getSizeOfListOfOpenChannels().getBytes()); // send size of list of open channels
+
+                            if(Integer.parseInt(records.getSizeOfListOfOpenChannels()) > 0) { // if there are channels
+                                // send name of all channels so user can choose from which to see posts
+                                int tagNumber = 1;
+                                for(Channel channel: records.getListOpenChannels()) {
+                                    taggedConnection.send(tagNumber,channel.getNameChannel().getBytes()); // send all channels names
+                                    tagNumber++;
+                                }
+
+                                String chosenChannel = new String(taggedConnection.receive().data); // receive specific channel name
+
+                                for(Channel channel: records.getListOpenChannels()) {
+                                    if(Objects.equals(channel.getNameChannel(), chosenChannel)) { // channel that user wants to check posts from
+                                        channel.closeChannel();
+                                    }
+                                }
+                            }
                         } else {
                             taggedConnection.send(0,Boolean.FALSE.toString().getBytes());
                         }
-
-                        //taggedConnection.send();
-
-                        // TODO: server close channel
-
-
-
-                        /* ... */
                     }
 
                     case 3 -> { // see posts in a channel
@@ -97,27 +108,22 @@ public class ServerWorker implements Runnable {
                                 }
                             }
                         }
-
-                        for(Channel channel: records.getListChannels()) {
-                            System.out.println(channel.getNameChannel() + " -> " + channel.getPosts());
-                        }
-
                     }
 
                     case 4 -> { // post in a channel
-                        taggedConnection.send(0,records.getSizeOfListChannels().getBytes()); // send size of list so client can know what to expect
+                        taggedConnection.send(0,records.getSizeOfListOfOpenChannels().getBytes()); // send size of list so client can know what to expect
 
-                        if(Integer.parseInt(records.getSizeOfListChannels()) > 0) { // if there are channels
+                        if(Integer.parseInt(records.getSizeOfListOfOpenChannels()) > 0) { // if there are channels
                             // send name of all channels so user can choose from which to see posts
                             int tagNumber = 1;
-                            for(Channel channel: records.getListChannels()) {
+                            for(Channel channel: records.getListOpenChannels()) {
                                 taggedConnection.send(tagNumber,channel.getNameChannel().getBytes()); // send all channels names
                                 tagNumber++;
                             }
 
                             String chosenChannel = new String(taggedConnection.receive().data); // receive specific channel name
 
-                            for(Channel channel: records.getListChannels()) {
+                            for(Channel channel: records.getListOpenChannels()) {
                                 if(Objects.equals(channel.getNameChannel(), chosenChannel)) { // channel that user wants to check posts from
                                     String username = new String(taggedConnection.receive().data);
                                     String message = new String(taggedConnection.receive().data);
@@ -130,7 +136,22 @@ public class ServerWorker implements Runnable {
                     }
 
                     case 5 -> { // get a list of posts from various channels
-                        // TODO: server get list of posts from various channels
+                        taggedConnection.send(0,records.getSizeOfListChannels().getBytes()); // send size of list
+
+                        if(Integer.parseInt(records.getSizeOfListChannels()) > 0) { // if there are channels
+                            // send name of all channels so user can choose from which to see posts
+                            for(Channel channel: records.getListChannels()) {
+                                taggedConnection.send(0,channel.getNameChannel().getBytes()); // send all channels names
+                            }
+
+                            for(Channel channel: records.getListChannels()) {
+                                taggedConnection.send(0,channel.getNumberPostsInChannel().getBytes()); // send size of list of posts so client can know what to expect
+
+                                for(Post post: channel.getPosts()) {
+                                    taggedConnection.send(0,post.toString().getBytes()); // send post transformed into formatted string and then bytes
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -144,10 +165,13 @@ public class ServerWorker implements Runnable {
             // code to handle unexpected disconnections
             try {
                 clientSocket.close();
+                System.out.println("User " + userName + " crashed and is now logged out");
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         }
     }
+
+    // TODO: convert some of the repeated actions into functions I can call
 
 }
