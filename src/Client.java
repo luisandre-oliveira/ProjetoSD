@@ -70,7 +70,7 @@ public class Client {
 
                         taggedConnection.send(0,name.getBytes());
                     } else {
-                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
+                        System.out.println("\n--ERROR   : user doesn´t have admin status--\n");
                     }
                 }
 
@@ -137,7 +137,7 @@ public class Client {
                             System.out.println(counter + " - " + tempListChannels.get(counter));
                         }
 
-                        System.out.println("What channel to you want to see?");
+                        System.out.println("What channel to you want to post a message?");
                         int chosenChannel = Integer.parseInt(stdin.readLine());
 
                         taggedConnection.send(0,tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
@@ -164,7 +164,7 @@ public class Client {
             }
         } while(Integer.parseInt(menu) != 0);
 
-        /* USER HAS CHOSEN TO LOGOUT */
+        /* USER HAS CHOSEN TO EXIT */
 
         System.out.println("\nCLOSING SOCKET...");
         taggedConnection.close();

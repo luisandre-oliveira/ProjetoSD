@@ -9,9 +9,21 @@ public class Server {
     public Server() throws IOException {
         serverSocket = new ServerSocket(PORT);
 
+        Records records = new Records();
+        records.addToListChannels(new Channel("Testing Channel",true));
+
+        User luis = new User("luis", "1234", true);
+        User jorge = new User("jorge", "1234", true);
+        User comum = new User("comum", "1234", false);
+
+        Login login = new Login();
+        login.addUser(luis);
+        login.addUser(jorge);
+        login.addUser(comum);
+
         while (true) {
             Socket clientSocket = serverSocket.accept();
-            Thread thread = new Thread(new ServerWorker(clientSocket));
+            Thread thread = new Thread(new ServerWorker(clientSocket, records, login));
             thread.start();
 
             System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
