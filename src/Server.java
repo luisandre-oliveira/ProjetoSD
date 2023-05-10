@@ -8,9 +8,6 @@ public class Server {
         final int PORT = 8080;
         final ServerSocket serverSocket = new ServerSocket(PORT);
 
-        Records records = new Records();
-        records.addToListChannels(new Channel("Testing Channel",true));
-
         User luis = new User("luis", "1234", true);
         User jorge = new User("jorge", "1234", true);
         User comum = new User("comum", "1234", false);
@@ -20,8 +17,15 @@ public class Server {
         login.addUser(jorge);
         login.addUser(comum);
 
+        Channel testing = new Channel("Testing Channel",true);
+        testing.addPost(new Post(luis.getUsername(),"Welcome to the beta testing channel"));
+
+        Records records = new Records();
+        records.addToListChannels(testing);
+
         while (true) {
             Socket clientSocket = serverSocket.accept();
+
             Thread thread = new Thread(new ServerWorker(clientSocket, records, login));
             thread.start();
 

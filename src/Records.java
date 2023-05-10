@@ -27,5 +27,4 @@ public class Records {
 
     public String getSizeOfListOfOpenChannels() { return String.valueOf(getListOpenChannels().size()); }
 
-
 }

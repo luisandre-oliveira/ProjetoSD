@@ -14,20 +14,14 @@ public class Post {
         this.content = content;
     }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getUsername() { return username; }
 
-    public String getTimestamp() {
-        return timestamp;
-    }
+    public String getTimestamp() { return timestamp; }
 
-    public String getContent() {
-        return content;
-    }
+    public String getContent() { return content; }
 
     @Override
     public String toString() {
-        return "[" + getTimestamp() + "] " + getUsername() + ": " + getContent();
+        return "[" + getTimestamp() + "] user '" + getUsername() + "' said: '" + getContent() + "'";
     }
 }

@@ -3,6 +3,7 @@ import java.net.Socket;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TaggedConnection {
+    @SuppressWarnings("ClassCanBeRecord")
     public static class Frame {
         public final int tag;
         public final byte[] data;
@@ -15,7 +16,6 @@ public class TaggedConnection {
 
     private final DataOutputStream outputStream;
     private final DataInputStream inputStream;
-
     private final ReentrantLock writeLock;
     private final ReentrantLock readLock;
 
@@ -27,6 +27,7 @@ public class TaggedConnection {
     }
 
     public void send(Frame frame) throws IOException {
+        /* I'll keep this as a sort of proof of concept, although I won't use it, because it makes the transfer slower */
         this.writeLock.lock();
         try {
             outputStream.writeInt(frame.tag);

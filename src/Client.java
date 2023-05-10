@@ -67,9 +67,9 @@ public class Client {
                         userAdminStatus = true;
 
                         System.out.println("What should the name of the channel be?");
-                        String name = stdin.readLine();
+                        String name = stdin.readLine(); // get from keyboard name of channel
 
-                        taggedConnection.send(0,name.getBytes());
+                        taggedConnection.send(0,name.getBytes()); // send channel data
                     } else {
                         System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
@@ -77,7 +77,7 @@ public class Client {
 
                 case 2 -> {
                     System.out.println("\nYou chose closing a channel.");
-                    state = new String(taggedConnection.receive().data);
+                    state = new String(taggedConnection.receive().data); // receive admin status
 
                     if(userAdminStatus || Objects.equals(state, Boolean.TRUE.toString())) {
                         userAdminStatus = true;
@@ -85,21 +85,21 @@ public class Client {
                         System.out.println("\n--ERROR: user doesn´t have admin status--\n");
                     }
 
-                    int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list
-                    System.out.println("There are " + sizeListChannels + " open channels.");
+                    int sizeListOpenChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of open channels
+                    System.out.println("There are " + sizeListOpenChannels + " open channels.");
 
-                    if(sizeListChannels > 0) {
-                        ArrayList<String> tempListChannels = new ArrayList<>();
+                    if(sizeListOpenChannels > 0) {
+                        ArrayList<String> tempListOpenChannels = new ArrayList<>();
 
-                        for (int counter = 0; counter < sizeListChannels; counter++) {
-                            tempListChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
-                            System.out.println(counter + " - " + tempListChannels.get(counter));
+                        for (int counter = 0; counter < sizeListOpenChannels; counter++) {
+                            tempListOpenChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
+                            System.out.println(counter + " - " + tempListOpenChannels.get(counter));
                         }
 
                         System.out.println("What channel to you want to close?");
                         int chosenChannel = Integer.parseInt(stdin.readLine());
 
-                        taggedConnection.send(0, tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
+                        taggedConnection.send(0, tempListOpenChannels.get(chosenChannel).getBytes()); // send specific channel name
                     }
                 }
 
@@ -129,7 +129,7 @@ public class Client {
                         if(sizeListPostsInChannel > 0) {
                             for (int counter = 0; counter < sizeListPostsInChannel; counter++) {
                                 message = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
-                                System.out.println("\n" + message);
+                                System.out.println(message);
                             }
                         } else {
                             System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListNameChannels.get(chosenChannel) + " --");
@@ -170,25 +170,25 @@ public class Client {
                 case 5 -> {
                     System.out.println("\nYou chose seeing posts from various channels.");
 
-                    int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
-                    System.out.println("There are " + sizeListChannels + " channels available.");
+                    int tempSizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
+                    System.out.println("There are " + tempSizeListChannels + " channels available.");
 
-                    if(sizeListChannels > 0) { // go through every channel
+                    if(tempSizeListChannels > 0) { // go through every channel
                         ArrayList<String> tempListNameChannels = new ArrayList<>();
 
-                        for (int counter = 0; counter < sizeListChannels; counter++) {
+                        for (int counter = 0; counter < tempSizeListChannels; counter++) {
                             tempListNameChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
                         }
 
-                        for (int outerCounter = 0; outerCounter < sizeListChannels; outerCounter++) {
-                            int sizeListPostsInChannel = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts in channel
+                        for (int channelCounter = 0; channelCounter < tempSizeListChannels; channelCounter++) { // go through every channel
+                            int tempSizeListPostsInChannel = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts in channel
 
                             String message;
 
-                            System.out.println("\n" + tempListNameChannels.get(outerCounter));
+                            System.out.println("\n" + tempListNameChannels.get(channelCounter));
 
-                            if(sizeListPostsInChannel > 0) {
-                                for (int innerCounter = 0; innerCounter < sizeListPostsInChannel; innerCounter++) {
+                            if(tempSizeListPostsInChannel > 0) {
+                                for (int postCounter = 0; postCounter < tempSizeListPostsInChannel; postCounter++) { // go through every post in channel
                                     message = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
                                     System.out.println(message);
                                 }

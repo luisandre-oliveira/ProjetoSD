@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Channel {
     private final String name;
-    private boolean state;
+    private boolean state; // true = open && false = closed
     private final List<Post> posts;
 
 
