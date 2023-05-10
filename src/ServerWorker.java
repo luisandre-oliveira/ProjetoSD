@@ -19,6 +19,8 @@ public class ServerWorker implements Runnable {
         String userName = "", userPass;
         boolean flag;
 
+        System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
+
         try {
             TaggedConnection taggedConnection = new TaggedConnection(clientSocket);
 
@@ -66,10 +68,9 @@ public class ServerWorker implements Runnable {
 
                             if(Integer.parseInt(records.getSizeOfListOfOpenChannels()) > 0) { // if there are channels
                                 // send name of all channels so user can choose from which to see posts
-                                int tagNumber = 1;
+
                                 for(Channel channel: records.getListOpenChannels()) {
-                                    taggedConnection.send(tagNumber,channel.getNameChannel().getBytes()); // send all channels names
-                                    tagNumber++;
+                                    taggedConnection.send(0,channel.getNameChannel().getBytes()); // send all channels names
                                 }
 
                                 String chosenChannel = new String(taggedConnection.receive().data); // receive specific channel name
@@ -90,10 +91,8 @@ public class ServerWorker implements Runnable {
 
                         if(Integer.parseInt(records.getSizeOfListChannels()) > 0) { // if there are channels
                             // send name of all channels so user can choose from which to see posts
-                            int tagNumber = 1;
                             for(Channel channel: records.getListChannels()) {
-                                taggedConnection.send(tagNumber,channel.getNameChannel().getBytes()); // send all channels names
-                                tagNumber++;
+                                taggedConnection.send(0,channel.getNameChannel().getBytes()); // send all channels names
                             }
 
                             String chosenChannel = new String(taggedConnection.receive().data); // receive specific channel name
@@ -115,10 +114,9 @@ public class ServerWorker implements Runnable {
 
                         if(Integer.parseInt(records.getSizeOfListOfOpenChannels()) > 0) { // if there are channels
                             // send name of all channels so user can choose from which to see posts
-                            int tagNumber = 1;
+
                             for(Channel channel: records.getListOpenChannels()) {
-                                taggedConnection.send(tagNumber,channel.getNameChannel().getBytes()); // send all channels names
-                                tagNumber++;
+                                taggedConnection.send(0,channel.getNameChannel().getBytes()); // send all channels names
                             }
 
                             String chosenChannel = new String(taggedConnection.receive().data); // receive specific channel name
@@ -170,8 +168,21 @@ public class ServerWorker implements Runnable {
                 throw new RuntimeException(ex);
             }
         }
+
+        System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
+    }
+
+    public int getNumberThreadsCurrentlyRunning() {
+        int nThreadsRunning = 0;
+        for (Thread t : Thread.getAllStackTraces().keySet()) {
+            if (t.getState() == Thread.State.RUNNABLE)
+                nThreadsRunning++;
+        }
+        return nThreadsRunning;
     }
 
     // TODO: convert some of the repeated actions into functions I can call
+
+
 
 }
