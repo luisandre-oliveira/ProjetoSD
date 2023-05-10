@@ -139,7 +139,7 @@ public class ServerWorker implements Runnable {
                                     String message = new String(taggedConnection.receive().data);
 
                                     Post post = new Post(username,message);
-                                    channel.addPost(post); //TODO
+                                    channel.addPost(post);
                                 }
                             }
                         }
