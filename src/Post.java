@@ -5,8 +5,7 @@ public class Post {
     private final String username;
     private final String timestamp;
     private final String content;
-
-    final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Post(String username, String content) {
         this.username = username;

@@ -17,6 +17,8 @@ public class Channel {
 
     public List<Post> getPosts() { return this.posts; }
 
+    public Post getLastPost() { return posts.get(posts.size() - 1); }
+
     public String getNameChannel() { return this.name; }
 
     public String getNumberPostsInChannel() { return String.valueOf(this.getPosts().size()); }

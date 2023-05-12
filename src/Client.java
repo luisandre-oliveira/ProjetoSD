@@ -1,14 +1,16 @@
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class Client {
     private static final int PORT = 8080;
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Socket socket = new Socket("localhost", PORT);
         TaggedConnection taggedConnection = new TaggedConnection(socket);
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in)); // read from keyboard
@@ -16,42 +18,44 @@ public class Client {
         String userName = "", userPass; // user information
         boolean userLoginStatus = false; // true if logged
         boolean userAdminStatus = false; // true if admin
-        String state, menu;
+        String menu;
 
         while(!userLoginStatus) {
             // Read the socket for the prompt, then reading the username from keyboard, and finally sending it
             System.out.println("Enter username: "); //Enter username prompt
             userName = stdin.readLine(); // User writes their username
 
-            taggedConnection.send(0,userName.getBytes());
+            taggedConnection.send(0,userName.getBytes()); // Send username
 
             // Read the socket for the prompt, then reading the password from keyboard, and finally sending it
             System.out.println("Enter password: "); //Enter password prompt
             userPass = stdin.readLine(); // User writes their password
 
-            taggedConnection.send(0,userPass.getBytes());
+            taggedConnection.send(0,userPass.getBytes()); // Send user's password
 
             // Read the socket for to see if logged or not
-            state = new String(taggedConnection.receive().data);
+            String state = new String(taggedConnection.receive().data); // receive state of login
 
-            if(Objects.equals(state, Boolean.TRUE.toString())) {
+            if(Objects.equals(state, String.valueOf(HttpsURLConnection.HTTP_OK))) {
                 userLoginStatus = true;
-                System.out.println("\n--SUCCESS: login successful--");
-            } else {
-                System.out.println("\n--WARNING: login unsuccessful--");
+                System.out.println("\n--SUCCESS: login successful.--");
+            } else if(Objects.equals(state,String.valueOf(HttpsURLConnection.HTTP_FORBIDDEN))){
+                System.out.println("\n--WARNING: login unsuccessful.--");
             }
         }
+
+        System.out.println("\n--WARNING: ALWAYS CHOOSE THE NUMBER REFERRING TO THE OPTION YOU WANT!!--");
 
         /* USER IS NOW LOGGED IN */
 
         do {
-            System.out.println("\n--WARNING: ALWAYS CHOOSE THE NUMBER REFERRING TO THE OPTION YOU WANT!!--");
-            System.out.println("Welcome to main menu!!");
+            System.out.println("\nWelcome to main menu!!");
             System.out.println("1 - (ADMIN) Create a channel.");
             System.out.println("2 - (ADMIN) Close a channel.");
             System.out.println("3 - See posts in a channel.");
             System.out.println("4 - Post in a channel.");
             System.out.println("5 - Get a list of posts from various channels.");
+            System.out.println("6 - Wait for a post in a channel.");
             System.out.println("0 - Exit the program.");
             System.out.println("\nWhat do you wish to do?");
 
@@ -61,28 +65,40 @@ public class Client {
             switch (Integer.parseInt(menu)) {
                 case 1 -> {
                     System.out.println("\nYou chose creating a channel.");
-                    state = new String(taggedConnection.receive().data); // receive state of user admin status
+                    String state = new String(taggedConnection.receive().data); // receive state of user admin status
 
-                    if(userAdminStatus || Objects.equals(state, Boolean.TRUE.toString())) {
+                    if(userAdminStatus || Objects.equals(state, String.valueOf(HttpsURLConnection.HTTP_ACCEPTED))) {
                         userAdminStatus = true;
 
                         System.out.println("What should the name of the channel be?");
                         String name = stdin.readLine(); // get from keyboard name of channel
 
-                        taggedConnection.send(0,name.getBytes()); // send channel data
+                        taggedConnection.send(0,name.getBytes()); // send channel name
+
+                        String message = new String(taggedConnection.receive().data); // receive channel create status
+
+                        if(message.equals(String.valueOf(HttpsURLConnection.HTTP_CREATED))) {
+                            System.out.println("\n--Channel created successfully.--");
+                        } else if(message.equals(String.valueOf(HttpsURLConnection.HTTP_CONFLICT))) {
+                            System.out.println("\n--ERROR: Channel name already exists.--");
+                        } else {
+                            System.out.println("\n--ERROR: Unrecognized error.--");
+                        }
                     } else {
-                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
+                        System.out.println("\n--ERROR: User doesn´t have admin status.--\n");
                     }
                 }
 
                 case 2 -> {
                     System.out.println("\nYou chose closing a channel.");
-                    state = new String(taggedConnection.receive().data); // receive admin status
+                    String state = new String(taggedConnection.receive().data); // receive admin status
 
-                    if(userAdminStatus || Objects.equals(state, Boolean.TRUE.toString())) {
+                    if(userAdminStatus || Objects.equals(state, String.valueOf(HttpsURLConnection.HTTP_ACCEPTED))) {
                         userAdminStatus = true;
+                    } else if(Objects.equals(state, String.valueOf(HttpsURLConnection.HTTP_UNAUTHORIZED))){
+                        System.out.println("\n--ERROR: User doesn´t have admin status.--\n");
                     } else {
-                        System.out.println("\n--ERROR: user doesn´t have admin status--\n");
+                        System.out.println("\nERROR: Unrecognized error.--");
                     }
 
                     int sizeListOpenChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of open channels
@@ -97,9 +113,18 @@ public class Client {
                         }
 
                         System.out.println("What channel to you want to close?");
-                        int chosenChannel = Integer.parseInt(stdin.readLine());
+                        int chosenChannelId = Integer.parseInt(stdin.readLine());
 
-                        taggedConnection.send(0, tempListOpenChannels.get(chosenChannel).getBytes()); // send specific channel name
+                        taggedConnection.send(0, tempListOpenChannels.get(chosenChannelId).getBytes()); // send specific channel name
+
+                        String message = new String(taggedConnection.receive().data);
+                        if(Objects.equals(message,String.valueOf(HttpsURLConnection.HTTP_OK))) {
+                            System.out.println("\n--Channel closed successfully.--");
+                        } else if(Objects.equals(message,String.valueOf(HttpsURLConnection.HTTP_NOT_FOUND))) {
+                            System.out.println("\n--ERROR: Channel doesn't exist.--");
+                        } else {
+                            System.out.println("\n--ERROR: Unrecognized error.--");
+                        }
                     }
                 }
 
@@ -107,7 +132,7 @@ public class Client {
                     System.out.println("\nYou chose seeing posts in a channel.");
 
                     int sizeListChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
-                    System.out.println("There are " + sizeListChannels + " open channels.");
+                    System.out.println("There are " + sizeListChannels + " channels live.");
 
                     if(sizeListChannels > 0) { // go through every channel
                         ArrayList<String> tempListNameChannels = new ArrayList<>();
@@ -118,9 +143,9 @@ public class Client {
                         }
 
                         System.out.println("What channel to you want to see?");
-                        int chosenChannel = Integer.parseInt(stdin.readLine()); // read from keyboard the id of the channel
+                        int chosenChannelIdId = Integer.parseInt(stdin.readLine()); // read from keyboard the id of the channel
 
-                        taggedConnection.send(0,tempListNameChannels.get(chosenChannel).getBytes()); // send specific channel id in list
+                        taggedConnection.send(0,tempListNameChannels.get(chosenChannelIdId).getBytes()); // send specific channel name in list
 
                         int sizeListPostsInChannel = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of posts
 
@@ -132,7 +157,7 @@ public class Client {
                                 System.out.println(message);
                             }
                         } else {
-                            System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListNameChannels.get(chosenChannel) + " --");
+                            System.out.println("\n--WARNING: No posts have been sent in channel: " + tempListNameChannels.get(chosenChannelIdId) + ". --");
                         }
                     } else {
                         System.out.println("\n--WARNING: There are no open channels--");
@@ -154,16 +179,23 @@ public class Client {
                         }
 
                         System.out.println("\nWhat channel to you want to post a message?");
-                        int chosenChannel = Integer.parseInt(stdin.readLine());
+                        int chosenChannelIdId = Integer.parseInt(stdin.readLine());
 
-                        taggedConnection.send(0,tempListChannels.get(chosenChannel).getBytes()); // send specific channel name
+                        taggedConnection.send(0,tempListChannels.get(chosenChannelIdId).getBytes()); // send specific channel name
 
                         System.out.println("What is the message for the post?");
-                        String message = stdin.readLine();
+                        String messageText = stdin.readLine();
                         taggedConnection.send(0,userName.getBytes());
-                        taggedConnection.send(1,message.getBytes());
+                        taggedConnection.send(1,messageText.getBytes());
+
+                        String message = new String(taggedConnection.receive().data); // receive post status
+                        if(Objects.equals(message,String.valueOf(HttpsURLConnection.HTTP_CREATED))) {
+                            System.out.println("\n--Post sent successfully.--");
+                        } else {
+                            System.out.println("\n--ERROR: Unrecognized error.--");
+                        }
                     } else {
-                        System.out.println("\n--WARNING: There are no open channels--");
+                        System.out.println("\n--WARNING: There are no open channels.--");
                     }
                 }
 
@@ -198,7 +230,50 @@ public class Client {
                         }
 
                     } else {
-                        System.out.println("\n--WARNING: There are no open channels--");
+                        System.out.println("\n--WARNING: There are no channels live.--");
+                    }
+                }
+
+                case 6 -> {
+                    System.out.println("\nYou chose to wait for a post to be sent to a channel.");
+
+                    int sizeListOpenChannels = Integer.parseInt(new String(taggedConnection.receive().data)); // receive size of list of channels
+                    System.out.println("There are " + sizeListOpenChannels + " channels live.");
+
+                    if(sizeListOpenChannels > 0) { // go through every channel
+                        ArrayList<String> tempListNameOpenChannels = new ArrayList<>();
+
+                        for (int counter = 0; counter < sizeListOpenChannels; counter++) {
+                            tempListNameOpenChannels.add(new String(taggedConnection.receive().data)); // receive all channels names
+                            System.out.println(counter + " - " + tempListNameOpenChannels.get(counter)); // print all the channels names
+                        }
+
+                        System.out.println("What channel to you want to see?");
+                        int chosenChannelName = Integer.parseInt(stdin.readLine()); // read from keyboard the id of the channel
+
+                        taggedConnection.send(0,tempListNameOpenChannels.get(chosenChannelName).getBytes()); // send specific channel name
+
+                        int tempNumberPostsBefore = Integer.parseInt(new String(taggedConnection.receive().data)); // receive number posts before
+                        int tempNumberPostsAfter = tempNumberPostsBefore;
+
+                        System.out.println("\n--Waiting for post to arrive.--\n");
+
+                        while (tempNumberPostsBefore == tempNumberPostsAfter) {
+                            TimeUnit.MILLISECONDS.sleep(200);
+                            tempNumberPostsAfter = Integer.parseInt(new String(taggedConnection.receive().data)); // receive number posts after
+                            taggedConnection.send(0,String.valueOf(HttpsURLConnection.HTTP_NOT_FOUND).getBytes()); // send state
+                        }
+
+                        taggedConnection.send(0,String.valueOf(HttpsURLConnection.HTTP_CREATED).getBytes());
+                        /* due to the 200ms sleep, an extra message is sent, that is trash */
+                        taggedConnection.receive();
+
+                        String newPost = new String(taggedConnection.receive().data); // receive post transformed into formatted string and then bytes
+                        System.out.println("NEW POST -> " + newPost);
+
+
+                    } else {
+                        System.out.println("\n--WARNING: There are no open channels.--");
                     }
                 }
 
