@@ -10,12 +10,12 @@ public class Server {
 
         User luis = new User("luis", "1234", true);
         User jorge = new User("jorge", "1234", true);
-        User comum = new User("comum", "1234", false);
+        User rui = new User("comum", "1234", false);
 
         Login login = new Login();
         login.addUser(luis);
         login.addUser(jorge);
-        login.addUser(comum);
+        login.addUser(rui);
 
         Channel testing = new Channel("Testing Channel",true);
         testing.addPost(new Post(luis.getUsername(),"Welcome to the beta testing channel."));
