@@ -227,9 +227,14 @@ public class ServerWorker implements Runnable {
             // code to handle unexpected disconnections
             try {
                 clientSocket.close();
+
+                if(userName.equals("")) {
+                    userName = "undefined";
+                }
+
                 System.out.println("User " + userName + " crashed and is now logged out");
             } catch (IOException ex) { // in case of user crash and can't close socket
-                throw new RuntimeException(ex);
+                ex.printStackTrace();
             }
         }
     }

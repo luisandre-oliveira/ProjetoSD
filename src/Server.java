@@ -18,10 +18,12 @@ public class Server {
         login.addUser(comum);
 
         Channel testing = new Channel("Testing Channel",true);
-        testing.addPost(new Post(luis.getUsername(),"Welcome to the beta testing channel"));
+        testing.addPost(new Post(luis.getUsername(),"Welcome to the beta testing channel."));
 
         Records records = new Records();
         records.addToListChannels(testing);
+
+        System.out.println("\n--Server started.--\n");
 
         while (true) {
             Socket clientSocket = serverSocket.accept();
@@ -29,7 +31,7 @@ public class Server {
             Thread thread = new Thread(new ServerWorker(clientSocket, records, login));
             thread.start();
 
-            System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
+            //System.out.println("\nNumber of threads running: " + getNumberThreadsCurrentlyRunning());
         }
     }
 
@@ -37,7 +39,7 @@ public class Server {
         Server server = new Server();
     }
 
-    public int getNumberThreadsCurrentlyRunning() {
+    public int getNumberThreadsCurrentlyRunning() { // In case we want to check the number of threads running
         int nThreadsRunning = 0;
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getState() == Thread.State.RUNNABLE)

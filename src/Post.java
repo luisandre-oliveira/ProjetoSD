@@ -5,10 +5,10 @@ public class Post {
     private final String username;
     private final String timestamp;
     private final String content;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public Post(String username, String content) {
         this.username = username;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         this.timestamp = LocalDateTime.now().format(formatter);
         this.content = content;
     }

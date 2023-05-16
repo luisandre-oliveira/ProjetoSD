@@ -3,9 +3,7 @@ import java.util.*;
 public class Login {
     public final List<User> listUsers;
 
-    public Login() {
-        listUsers = new ArrayList<>();
-    }
+    public Login() { listUsers = new ArrayList<>(); }
 
     public boolean checkCredentials(String username, String password) {
         boolean flag = false;
@@ -32,11 +30,7 @@ public class Login {
         return flag;
     }
 
-    public void addUser(User user) {
-        listUsers.add(user);
-    }
+    public void addUser(User user) { listUsers.add(user); }
 
-    public List<User> getListUsers() {
-        return new ArrayList<>(listUsers);
-    }
+    public List<User> getListUsers() { return new ArrayList<>(listUsers); }
 }
